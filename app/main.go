@@ -5,7 +5,6 @@ import (
 	"cardsRestApi/database"
 	"cardsRestApi/entity"
 	"cardsRestApi/server"
-
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -15,8 +14,7 @@ func main() {
 	cfg := database.LoadConfig("./database")
 
 	db, err := gorm.Open(postgres.New(postgres.Config{
-		DSN:                  cfg.GetDbUrl(),
-		PreferSimpleProtocol: true,
+		DSN: cfg.GetDbUrl(),
 	}), &gorm.Config{})
 
 	if err != nil {
