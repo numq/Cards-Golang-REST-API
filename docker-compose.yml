@@ -1,11 +1,30 @@
-version: '3.7'
+version: '3.8'
 
 services:
   postgres:
-    image: postgres:10.6-alpine
-    container_name: cards_postgres
+    image: postgres
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
+      - POSTGRES_DB=go_cards
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=dbadmin
+    restart: always
+  web:
+    build: .
+    command: go run app/main.go
+    volumes:
+      - /cardsRestApi
+    ports:
+      - '8000:8080'
+    depends_on:
+      - postgres
+    restart: always
+
+#  WORKDIR /src
+#  COPY ./ /src
+#
+#  RUN go mod download
+#
+#  EXPOSE 8080
+#  ENTRYPOINT go run app/main.go

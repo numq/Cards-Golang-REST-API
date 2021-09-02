@@ -8,18 +8,18 @@ import (
 var AppConfig Config
 
 type Config struct {
-	DbDriver      string `mapstructure:"DB_DRIVER"`
-	DbUser        string `mapstructure:"DB_USER"`
-	DbPassword    string `mapstructure:"DB_PASSWORD"`
-	DbPort        string `mapstructure:"DB_PORT"`
-	DbHost        string `mapstructure:"DB_HOST"`
-	DbName        string `mapstructure:"DB_NAME"`
-	AppPort       string `mapstructure:"APP_PORT"`
+	DbDriver   string `mapstructure:"DB_DRIVER"`
+	DbUser     string `mapstructure:"DB_USER"`
+	DbPassword string `mapstructure:"DB_PASSWORD"`
+	DbPort     string `mapstructure:"DB_PORT"`
+	DbHost     string `mapstructure:"DB_HOST"`
+	DbName     string `mapstructure:"DB_NAME"`
+	AppPort    string `mapstructure:"APP_PORT"`
 }
 
 func (c Config) GetDbUrl() string {
-	return fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s",
-		c.DbHost, c.DbPort, c.DbUser, c.DbName, c.DbPassword)
+	return fmt.Sprintf("%s://%s:%s@%s:%s/%s?sslmode=disable",
+		c.DbDriver, c.DbUser, c.DbPassword, c.DbHost, c.DbPort, c.DbName)
 }
 
 func LoadConfig(path string) (config Config) {
@@ -27,8 +27,14 @@ func LoadConfig(path string) (config Config) {
 	viper.SetConfigName("app")
 	viper.SetConfigType("env")
 	viper.AutomaticEnv()
-	viper.ReadInConfig()
-	viper.Unmarshal(&config)
+	err := viper.ReadInConfig()
+	if err != nil {
+		return
+	}
+	err = viper.Unmarshal(&config)
+	if err != nil {
+		return
+	}
 	AppConfig = config
 	return AppConfig
 }
